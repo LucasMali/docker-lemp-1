@@ -1,44 +1,15 @@
 ## docker-lemp
 
-[![Docker build](https://github.com/adhocore/docker-lemp/actions/workflows/build.yml/badge.svg)](https://github.com/adhocore/docker-lemp/actions/workflows/build.yml)
-[![Donate 15](https://img.shields.io/badge/donate-paypal-blue.svg?style=flat-square&label=donate+15)](https://www.paypal.me/ji10/15usd)
-[![Donate 25](https://img.shields.io/badge/donate-paypal-blue.svg?style=flat-square&label=donate+25)](https://www.paypal.me/ji10/25usd)
-[![Donate 50](https://img.shields.io/badge/donate-paypal-blue.svg?style=flat-square&label=donate+50)](https://www.paypal.me/ji10/50usd)
-[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Complete+LEMP+fullstack+for+local+development+using+docker&url=https://github.com/adhocore/docker-lemp&hashtags=docker,lemp,fullstack,localdev)
-
 
 > Do not use this LEMP in Production.
 > For production, use [adhocore/phpfpm](https://github.com/adhocore/docker-phpfpm)
 > then [compose](https://docs.docker.com/compose/install/) a stack using individual `nginx`, `redis`, `mysql` etc images.
 
-[`adhocore/lemp`](https://hub.docker.com/r/adhocore/lemp) is a minimal single container LEMP full stack for local development.
 
-> If you want to use PHP7.4 on LEMP stack then head over to [`adhocore/lemp:7.4`](7.4.Dockerfile).
 
 It is quick jumpstart for onboarding you into docker based development.
 The download size is just about ~360MB which is tiny considering how much tools and stuffs it contains.
 
-The docker container `adhocore/lemp` is composed of:
-
-Name          | Version    | Port
---------------|------------|------
-adminer       | 4.8.1      | 80
-alpine        | 3.15       | -
-beanstalkd    | 1.12       | 11300
-elasticsearch | 6.4.3      | 9200,9300
-mailcatcher   | 0.7.1      | 88,25
-memcached     | 1.6.12      | 11211
-MySQL`*`      | 5.7        | 3306
-nginx         | 1.20.2     | 80
-phalcon       | 5.0.3      | -
-PHP8.2`~`     | 8.2RC4     | 9000
-PHP8.1`+`     | 8.1.11     | 9000
-PHP8.0`+`     | 8.0.24     | 9000
-PHP7.4`+`     | 7.4.32     | 9000
-PostgreSQL    | 14.5       | 5432
-~rabbitmq~`^` | 3.8.*      | 5672
-redis         | 6.2.7      | 6379
-swoole        | 4.8.9      | -
 
 > `*`: Actually [MariaDB 10.6.9](https://mariadb.com/kb/en/mariadb-vs-mysql-compatibility/).
 
@@ -53,35 +24,20 @@ Also recommended to install [docker-compose](https://docs.docker.com/compose/ins
 
 ```sh
 # pull latest image
-docker pull adhocore/lemp:8.1
-
-# or with PHP8.0
-docker pull adhocore/lemp:8.0
-
-# or if you use php 7.4, replace 8.0 with 7.4:
-docker pull adhocore/lemp:7.4
-
-# tryout php 8.2rc
-docker pull adhocore/lemp:8.1
-
-# Go to your project root then run
-docker run -p 8080:80 -p 8888:88 -v `pwd`:/var/www/html --name lemp -d adhocore/lemp:8.0
-
-# In windows, you would use %cd% instead of `pwd`
-docker run -p 8080:80 -p 8888:88 -v %cd%:/var/www/html --name lemp -d adhocore/lemp:8.0
+docker build -t lemp .
 
 # If you want to setup MySQL credentials, pass env vars
-docker run -p 8080:80 -p 8888:88 -v `pwd`:/var/www/html \
-  -e MYSQL_ROOT_PASSWORD=1234567890 -e MYSQL_DATABASE=appdb \
-  -e MYSQL_USER=dbuser -e MYSQL_PASSWORD=123456 \
-  --name lemp -d adhocore/lemp:8.1
+docker run -p 80:80 -p 88:88 -v /Users/lucas/Development/docker-lemp/public:/var/www/html/public \
+  -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=wp \
+  -e MYSQL_USER=user -e MYSQL_PASSWORD=password \
+  --name lemp -d lemp
   # for postgres you can pass in similar env as for mysql but with PGSQL_ prefix
 ```
 
-After running container as above, you will be able to browse [localhost:8080](http://localhost:8080)!
+After running container as above, you will be able to browse [localhost](http://localhost)!
 
-The database adminer will be available for [mysql](http://localhost:8080/adminer?server=127.0.0.1%3A3306&username=root)
-and [postgres](http://localhost:8080/adminer?pgsql=127.0.0.1%3A5432&username=postgres).
+The database adminer will be available for [mysql](http://localhost:80/adminer?server=127.0.0.1%3A3306&username=root)
+and [postgres](http://localhost:80/adminer?pgsql=127.0.0.1%3A5432&username=postgres).
 
 The mailcatcher will be available at [localhost:8888](http://localhost:8888) which displays mails in realtime.
 
@@ -129,7 +85,7 @@ services:
       # Here you can also volume php ini settings
       # - /path/to/zz-overrides:/usr/local/etc/php/conf.d/zz-overrides.ini
     ports:
-      - 8080:80
+      - 80:80
     environment:
       MYSQL_ROOT_PASSWORD: supersecurepwd
       MYSQL_DATABASE: appdb

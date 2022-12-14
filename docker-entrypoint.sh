@@ -30,6 +30,8 @@ fi
 if [ "$DISABLE_MYSQL" != "YES" ] && [ ! -f "/run/mysqld/.init" ]; then
   [[ "$MYSQL_USER" = "root" ]] && echo "Please set MYSQL_USER other than root" && exit 1
 
+  echo "Using mysql"
+
   SQL=$(mktemp)
 
   mkdir -p /run/mysqld /var/lib/mysql
@@ -57,6 +59,7 @@ if [ "$DISABLE_MYSQL" != "YES" ] && [ ! -f "/run/mysqld/.init" ]; then
 
   rm -rf ~/.mysql_history ~/.ash_history $SQL
   touch /run/mysqld/.init
+
 fi
 
 # init pgsql
@@ -85,5 +88,9 @@ if [ "$DISABLE_PGSQL" != "YES" ] && [ ! -f /run/postgresql/.init ]; then
   sed -i -E 's/host\s+all(.*)trust/host    all\1password/' /usr/local/pgsql/data/pg_hba.conf
   touch /run/postgresql/.init
 fi
+
+# Move wordpress
+mv /tmp/wordpress /var/www/html
+
 
 exec "$@"

@@ -1,6 +1,6 @@
-FROM adhocore/phpfpm:8.1
+FROM adhocore/phpfpm:8.2
 
-MAINTAINER Jitendra Adhikari <jiten.adhikary@gmail.com>
+LABEL  org.opencontainers.image.authors="Jitendra Adhikari <jiten.adhikary@gmail.com>, Me"
 
 ENV \
   ADMINER_VERSION=4.8.1 \
@@ -52,6 +52,11 @@ COPY --from=tophfr/mailcatcher /usr/bin/ruby /usr/bin/mailcatcher /usr/bin/
 
 # resource
 COPY php/index.php /var/www/html/index.php
+
+# load wordpress
+RUN wget https://wordpress.org/latest.tar.gz --no-check-certificate -P /tmp
+RUN tar -xzvf /tmp/latest.tar.gz
+# RUN cp -fR /tmp/wordpress /var/www/html # gets overriden by the docker-entrypoint.sh
 
 # supervisor config
 COPY \
